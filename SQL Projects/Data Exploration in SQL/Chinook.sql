@@ -34,5 +34,45 @@ JOIN INVOICE I
 	ON I.CUSTOMERID = C.CustomerId
 ORDER BY COST DESC;
 
--- Query 5: List all albums and their total sales.
+-- Query 5: List all tracks and their total sales.
+
+--TBC
+
+--SELECT T.NAME
+--FROM TRACK T
+--JOIN InvoiceLine I
+--	ON T.TrackId=I.TrackId;
+
+
+-- Query 7: Retrieve a list of all invoices with customer details.
+
+SELECT C.FIRSTNAME +' '+ C.LASTNAME AS NAME,C.Country,C.Email,I.InvoiceId,I.InvoiceDate
+FROM Customer C
+JOIN Invoice I
+	ON I.CustomerId=C.CustomerId;
+
+-- Query 8: List all tracks with their names, album titles, and artist names.
+
+SELECT T.NAME AS TRACK,A.Title AS ALBUM,AA.Name AS ARTIST
+FROM Track T
+JOIN Album A
+	ON A.AlbumId = T.AlbumId
+JOIN Artist AA
+	ON AA.ArtistId = A.AlbumId;
+
+-- Query 9: Find the average invoice total for each country.
+
+SELECT AVG(I.Total) AS AVERAGE,I.BillingCountry AS COUNTRY
+FROM Invoice I
+GROUP BY I.BillingCountry;
+
+-- Query 10: Retrieve a list of albums along with the total number of tracks in each.
+
+SELECT A.Title,T.AlbumId,COUNT(T.TrackId) AS 'NO OF TRACKS'
+FROM TRACK T
+JOIN ALBUM A
+	ON A.AlbumId=T.AlbumId
+GROUP BY T.AlbumId,A.Title;
+
+
 
