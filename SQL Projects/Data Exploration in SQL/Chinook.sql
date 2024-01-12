@@ -9,6 +9,49 @@
  --------------------------------------------------------------------------------------------------------------------------------------------
  */
 
+
+ /* List of Queries to be performed
+ --------------------------------------------------------------------------------------------------------------------------------------------
+ Certainly! Here are some additional real-life queries and tasks related to the Chinook database, covering various SQL concepts:
+
+### 1. **Basic Queries:**
+   - Retrieve all tracks from the "Tracks" table with their names and durations.
+   - Find the top 10 customers who made the most purchases.
+   - List all albums and their total sales.
+   - Count the number of distinct composers in the database.
+
+### 2. **Joins and Aggregations:**
+   - Display a list of customers with their total purchase amount, including those who have not made any purchases.
+   - List all tracks with their names, genres, and media types.
+   - Find the average invoice total for each country.
+   - Retrieve a list of albums along with the total number of tracks in each.
+
+### 3. **Subqueries and Filtering:**
+   - Identify customers who have purchased tracks by a specific artist.
+   - List tracks that are longer than the average duration of all tracks.
+   - Find customers who have made more than one purchase.
+   - Display invoices with a total greater than the highest individual track price.
+
+### 4. **Window Functions and Ranking:**
+   - Rank customers based on the number of tracks they have purchased.
+   - Calculate the cumulative sum of sales for each month.
+   - Rank genres based on their total sales.
+   - Determine the highest-selling track for each album.
+
+### 5. **Stored Procedures and Updates:**
+   - Create a stored procedure to add a new customer to the database.
+   - Implement a stored procedure to update the price of tracks in a specific genre.
+   - Design a stored procedure to delete a customer and associated invoices.
+   - Create a stored procedure to calculate the average track duration for a given album.
+
+### 6. **Advanced Queries:**
+   - Identify customers who have not made a purchase in the last six months.
+   - List the top 5 artists with the most tracks in the database.
+   - Calculate the percentage of total sales contributed by each customer.
+   - Find the correlation between the length of tracks and their popularity (number of times purchased).
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+*/
+
 -- Query 1: Retrieve all information from the "Customers" table.
 
  SELECT *
@@ -74,5 +117,64 @@ JOIN ALBUM A
 	ON A.AlbumId=T.AlbumId
 GROUP BY T.AlbumId,A.Title;
 
+-- Query 11: Identify customers who have purchased tracks by a specific artist.
 
+SELECT CustomerID,
+    FirstName + ' ' + LastName AS CustomerName,
+    Email
+FROM
+    Customer
+WHERE 
+	CustomerId IN (
+		SELECT DISTINCT
+		C.CustomerId
+		FROM
+		Customer C,
+		Invoice I,
+		InvoiceLine IL,
+		Track T,
+		Album A,
+		Artist AR
+		WHERE
+			C.CustomerId = I.CustomerId AND
+			I.InvoiceId = IL.InvoiceId AND
+			IL.TrackId = T.TrackId AND
+			T.AlbumId = A.AlbumId AND
+			A.AlbumId = AR.ArtistId AND
+			AR.Name = 'Aerosmith'
+			
+		);
 
+-- Query 12: List tracks that are longer than the average duration of all tracks.
+
+SELECT NAME,Milliseconds
+FROM TRACK
+WHERE Milliseconds > (SELECT AVG(MILLISECONDS) FROM TRACK);
+
+-- Query 13: Find customers who have made more than one purchase.
+
+SELECT CustomerId, COUNT(CustomerId) AS 'COUNT'
+FROM Invoice
+GROUP BY CUSTOMERID
+HAVING COUNT(CustomerId)>1;
+
+-- Query 14: Display invoices with a total greater than the highest individual track price.
+
+SELECT * 
+FROM Invoice
+WHERE TOTAL > (SELECT MAX(UnitPrice) FROM InvoiceLine);
+
+-- Query 15: Identify the artist who has the most albums.
+
+SELECT TOP 1
+    ar.ArtistID,
+    ar.Name AS ArtistName,
+    COUNT(DISTINCT al.AlbumID) AS AlbumCount
+FROM
+    Artist ar
+JOIN
+    Album al ON ar.ArtistID = al.ArtistID
+GROUP BY
+    ar.ArtistID, ar.Name
+ORDER BY
+    AlbumCount DESC;
