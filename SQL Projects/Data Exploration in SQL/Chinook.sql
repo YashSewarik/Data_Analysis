@@ -178,3 +178,19 @@ GROUP BY
     ar.ArtistID, ar.Name
 ORDER BY
     AlbumCount DESC;
+
+-- Query 16: Rank customers based on the number of tracks they have purchased.
+
+SELECT CustomerId, COUNT(CustomerId) AS 'COUNT'
+FROM Invoice
+GROUP BY CUSTOMERID
+ORDER BY COUNT DESC;
+
+-- Query 17: Calculate the cumulative sum of sales for each month.
+
+SELECT MONTH(InvoiceDate),SUM(TOTAL) 
+FROM Invoice
+GROUP BY MONTH(InvoiceDate);
+
+-- Query 18: Rank genres based on their total sales.
+
